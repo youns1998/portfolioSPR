@@ -2,13 +2,13 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <body>
 <header class="site-header" th:fragment="header">
-  <a class="brand" th:href="@{/}" aria-label="무명광장 홈">
+  <a class="brand" th:href="@{/community}" aria-label="무명광장 홈">
     <span class="brand-mark" aria-hidden="true">무</span>
     <span>무명광장</span>
   </a>
   <span class="header-note">취미를 나누는 커뮤니티</span>
   <nav aria-label="주 메뉴">
-    <a th:href="@{/}" th:classappend="${board == null} ? 'active'"
+    <a th:href="@{/community}" th:classappend="${board == null} ? 'active'"
        th:attr="aria-current=${board == null} ? 'page' : null">전체</a>
     <a th:each="item : ${navigationBoards}" th:href="@{/boards/{id}(id=${item.board.id})}"
        th:text="${item.board.name}" th:classappend="${board != null and board.id == item.board.id} ? 'active'"

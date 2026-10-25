@@ -38,7 +38,7 @@ public class CommunityController {
         return communityService.findBoards();
     }
 
-    @GetMapping("/")
+    @GetMapping("/community")
     public String home(Model model) {
         model.addAttribute("boards", communityService.findBoardPreviews());
         return "home";
@@ -112,7 +112,7 @@ public class CommunityController {
                               RedirectAttributes redirectAttributes) {
         communityService.deleteBoard(boardId, password);
         redirectAttributes.addFlashAttribute("notice", "게시판과 모든 게시글을 삭제했습니다.");
-        return "redirect:/";
+        return "redirect:/community";
     }
 
     @GetMapping("/boards/{boardId}/posts/new")

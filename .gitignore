@@ -31,3 +31,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Local runtime and QA artifacts
+data/
+.codex-preview/
+*.log
+.env

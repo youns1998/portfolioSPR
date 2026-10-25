@@ -107,7 +107,7 @@ class CommunityBoardTests {
     void creationLinksAreHiddenAndDirectCreationRequestsAreRejected() throws Exception {
         Long boardId = communityService.findBoards().getFirst().board().getId();
         Post latest = communityService.findPosts(boardId, 0, "").getContent().getFirst();
-        mvc.perform(get("/"))
+        mvc.perform(get("/community"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(latest.getTitle())))
                 .andExpect(content().string(containsString("/boards/" + boardId + "/posts/" + latest.getId())))
