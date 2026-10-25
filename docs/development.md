@@ -13,6 +13,7 @@
 | 최초 시연 데이터 | `workspace/config/WorkspaceDemoData.java` |
 
 화면: `src/main/resources/templates/workspace/` / CSS: `src/main/resources/static/workspace-assets/work.css`.
+웹 화면은 GitHub·[Primer](https://primer.style/product/primitives/color/)를 참고한 흰색 본문·회색 헤더·파란색 링크를 사용합니다. 로그인·목록·등록·수정·상세와 기존 커뮤니티 화면에 적용합니다.
 기존 커뮤니티는 Java·템플릿·스타일·테스트를 별도 폴더에 보존했습니다. 공통 HTTP 업무 예외는 `common/BusinessException.java`입니다.
 
 요청은 컨트롤러 → 서비스 → Repository → H2 순서로 처리합니다. 서비스가 트랜잭션과 업무 규칙을 맡습니다. 사업·업무에는 `@Version`을 두고, 처리 이력의 사업 ID는 삭제 후 기록을 남기는 논리 참조입니다.

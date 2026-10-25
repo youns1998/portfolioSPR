@@ -54,7 +54,11 @@
             <article class="task" th:each="i:${items}">
               <div class="task-title">
                 <h3 th:text="${i.title}"></h3>
-                <span class="badge" th:text="${i.status.label}"></span>
+                <span
+                  class="badge"
+                  th:attr="data-status=${i.status}"
+                  th:text="${i.status.label}"
+                ></span>
               </div>
               <p th:text="${i.description}"></p>
               <small th:text="|담당 ${i.assignee} · 마감 ${i.dueDate}|"></small>

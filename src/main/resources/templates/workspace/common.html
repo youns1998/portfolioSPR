@@ -1,16 +1,26 @@
 <!doctype html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
   <body>
-    <header th:fragment="header" class="topbar">
-      <a class="brand" th:href="@{/workspace}"
-        >사업기록<span>공공사업 관리 포트폴리오</span></a
-      >
-      <nav>
-        <a th:href="@{/workspace}">사업 목록</a
-        ><a th:href="@{/workspace/export.csv}">CSV 내려받기</a>
+    <header th:fragment="header" class="app-header">
+      <div class="topbar">
+        <a class="brand" th:href="@{/workspace}"
+          ><span class="brand-symbol" aria-hidden="true"
+            ><svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            >
+              <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-12-2 14" /></svg></span
+          ><span><span class="brand-owner">workspace / </span>사업기록</span></a
+        >
         <form th:action="@{/workspace/logout}" method="post">
           <button class="link" type="submit">로그아웃</button>
         </form>
+      </div>
+      <nav class="app-tabs" aria-label="주 메뉴">
+        <a th:href="@{/workspace}" aria-current="page">사업 목록</a
+        ><a th:href="@{/workspace/export.csv}">CSV 내보내기</a>
       </nav>
     </header>
     <footer th:fragment="footer">
