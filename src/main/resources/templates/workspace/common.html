@@ -1,4 +1,21 @@
-<!doctype html><html lang="ko" xmlns:th="http://www.thymeleaf.org"><body>
-<header th:fragment="header" class="topbar"><a class="brand" th:href="@{/workspace}">사업기록<span>공공사업 관리 포트폴리오</span></a><nav><a th:href="@{/workspace}">사업 목록</a><a th:href="@{/workspace/export.csv}">CSV 내려받기</a><form th:action="@{/workspace/logout}" method="post"><button class="link" type="submit">로그아웃</button></form></nav></header>
-<footer th:fragment="footer">개인 포트폴리오 · 샘플 사업·담당자는 가상 데이터입니다. 실제 기관 시스템이나 수행 실적이 아닙니다.</footer>
-</body></html>
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <header th:fragment="header" class="topbar">
+      <a class="brand" th:href="@{/workspace}"
+        >사업기록<span>공공사업 관리 포트폴리오</span></a
+      >
+      <nav>
+        <a th:href="@{/workspace}">사업 목록</a
+        ><a th:href="@{/workspace/export.csv}">CSV 내려받기</a>
+        <form th:action="@{/workspace/logout}" method="post">
+          <button class="link" type="submit">로그아웃</button>
+        </form>
+      </nav>
+    </header>
+    <footer th:fragment="footer">
+      개인 포트폴리오 · 샘플 사업·담당자는 가상 데이터입니다. 실제 기관
+      시스템이나 수행 실적이 아닙니다.
+    </footer>
+  </body>
+</html>

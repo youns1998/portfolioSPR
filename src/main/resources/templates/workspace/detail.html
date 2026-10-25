@@ -1,1 +1,168 @@
-<!doctype html><html lang="ko" xmlns:th="http://www.thymeleaf.org"><head><link rel="icon" href="data:,"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title th:text="|${project.name} · 사업기록|"></title><link rel="stylesheet" th:href="@{/workspace-assets/work.css}"></head><body><div class="shell"><header th:replace="~{workspace/common :: header}"></header><main><a class="text-link" th:href="@{/workspace}">← 사업 목록</a><div class="page-head"><div><p class="eyebrow" th:text="${project.code}"></p><h1 th:text="${project.name}"></h1><p class="muted" th:text="${project.description}"></p></div><a th:if="${canEdit}" class="button" th:href="@{/workspace/projects/{id}/edit(id=${project.id})}">사업 수정</a></div><dl class="facts"><div><dt>담당</dt><dd th:text="${project.owner}"></dd></div><div><dt>사업 일정</dt><dd th:text="|${project.startDate} — ${project.dueDate}|"></dd></div><div><dt>상태</dt><dd><span class="badge" th:attr="data-status=${project.status}" th:text="${project.status.label}"></span></dd></div></dl><div class="detail-grid"><section><h2>연결 업무</h2><p th:if="${#lists.isEmpty(items)}" class="empty">등록한 업무가 없습니다.</p><article class="task" th:each="i:${items}"><div class="task-title"><h3 th:text="${i.title}"></h3><span class="badge" th:text="${i.status.label}"></span></div><p th:text="${i.description}"></p><small th:text="|담당 ${i.assignee} · 마감 ${i.dueDate}|"></small><p th:if="${!i.resolution.isEmpty()}" class="resolution" th:text="${i.resolution}"></p><form class="status-form" th:if="${canEdit and project.status.name()!='COMPLETED'}" th:action="@{/workspace/projects/{p}/items/{i}/status(p=${project.id},i=${i.id})}" method="post"><input type="hidden" name="version" th:value="${i.version}"><label th:for="|state-${i.id}|" class="sr-only">다음 상태</label><select th:id="|state-${i.id}|" name="status"><option th:each="s:${itemStatuses}" th:if="${i.status.canMoveTo(s)}" th:value="${s}" th:text="${s.label}"></option></select><label th:for="|memo-${i.id}|" class="sr-only">조치 메모</label><input th:id="|memo-${i.id}|" name="memo" maxlength="1000" placeholder="조치 메모 (필수)" required><button>상태 변경</button></form></article><details th:if="${canEdit and project.status.name()!='COMPLETED'}" class="add-task"><summary>+ 업무 등록</summary><form th:object="${itemForm}" th:action="@{/workspace/projects/{id}/items(id=${project.id})}" method="post"><div th:if="${#fields.hasErrors('*')}" class="error"><p th:each="e:${#fields.errors('*')}" th:text="${e}"></p></div><label for="title">업무명</label><input id="title" th:field="*{title}" maxlength="150" required><label for="assignee">담당자</label><input id="assignee" th:field="*{assignee}" maxlength="60" required><label for="itemDue">마감일</label><input id="itemDue" type="date" th:field="*{dueDate}" required><label for="itemDesc">내용</label><textarea id="itemDesc" th:field="*{description}" maxlength="2000" rows="3"></textarea><button class="primary">업무 등록</button></form></details></section><aside><h2>변경 이력</h2><ol class="history"><li th:each="a:${history}"><p th:text="${a.action}"></p><small th:text="|${a.actor} · ${#temporals.format(a.createdAt,'MM-dd HH:mm:ss')}|"></small></li></ol></aside></div><details th:if="${canEdit}" class="delete-area"><summary>사업 삭제</summary><p>연결 업무가 없는 사업만 삭제할 수 있습니다.</p><form th:action="@{/workspace/projects/{id}/delete(id=${project.id})}" method="post"><button class="danger" onclick="return confirm('이 사업을 삭제할까요?')">사업 삭제</button></form></details></main><footer th:replace="~{workspace/common :: footer}"></footer></div></body></html>
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <link rel="icon" href="data:," />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title th:text="|${project.name} · 사업기록|"></title>
+    <link rel="stylesheet" th:href="@{/workspace-assets/work.css}" />
+  </head>
+  <body>
+    <div class="shell">
+      <header th:replace="~{workspace/common :: header}"></header>
+      <main>
+        <a class="text-link" th:href="@{/workspace}">← 사업 목록</a>
+        <div class="page-head">
+          <div>
+            <p class="eyebrow" th:text="${project.code}"></p>
+            <h1 th:text="${project.name}"></h1>
+            <p class="muted" th:text="${project.description}"></p>
+          </div>
+          <a
+            th:if="${canEdit}"
+            class="button"
+            th:href="@{/workspace/projects/{id}/edit(id=${project.id})}"
+            >사업 수정</a
+          >
+        </div>
+        <dl class="facts">
+          <div>
+            <dt>담당</dt>
+            <dd th:text="${project.owner}"></dd>
+          </div>
+          <div>
+            <dt>사업 일정</dt>
+            <dd th:text="|${project.startDate} — ${project.dueDate}|"></dd>
+          </div>
+          <div>
+            <dt>상태</dt>
+            <dd>
+              <span
+                class="badge"
+                th:attr="data-status=${project.status}"
+                th:text="${project.status.label}"
+              ></span>
+            </dd>
+          </div>
+        </dl>
+        <div class="detail-grid">
+          <section>
+            <h2>연결 업무</h2>
+            <p th:if="${#lists.isEmpty(items)}" class="empty">
+              등록한 업무가 없습니다.
+            </p>
+            <article class="task" th:each="i:${items}">
+              <div class="task-title">
+                <h3 th:text="${i.title}"></h3>
+                <span class="badge" th:text="${i.status.label}"></span>
+              </div>
+              <p th:text="${i.description}"></p>
+              <small th:text="|담당 ${i.assignee} · 마감 ${i.dueDate}|"></small>
+              <p
+                th:if="${!i.resolution.isEmpty()}"
+                class="resolution"
+                th:text="${i.resolution}"
+              ></p>
+              <form
+                class="status-form"
+                th:if="${canEdit and project.status.name()!='COMPLETED'}"
+                th:action="@{/workspace/projects/{p}/items/{i}/status(p=${project.id},i=${i.id})}"
+                method="post"
+              >
+                <input
+                  type="hidden"
+                  name="version"
+                  th:value="${i.version}"
+                /><label th:for="|state-${i.id}|" class="sr-only"
+                  >다음 상태</label
+                ><select th:id="|state-${i.id}|" name="status">
+                  <option
+                    th:each="s:${itemStatuses}"
+                    th:if="${i.status.canMoveTo(s)}"
+                    th:value="${s}"
+                    th:text="${s.label}"
+                  ></option></select
+                ><label th:for="|memo-${i.id}|" class="sr-only">조치 메모</label
+                ><input
+                  th:id="|memo-${i.id}|"
+                  name="memo"
+                  maxlength="1000"
+                  placeholder="조치 메모 (필수)"
+                  required
+                /><button>상태 변경</button>
+              </form>
+            </article>
+            <details
+              th:if="${canEdit and project.status.name()!='COMPLETED'}"
+              class="add-task"
+            >
+              <summary>+ 업무 등록</summary>
+              <form
+                th:object="${itemForm}"
+                th:action="@{/workspace/projects/{id}/items(id=${project.id})}"
+                method="post"
+              >
+                <div th:if="${#fields.hasErrors('*')}" class="error">
+                  <p th:each="e:${#fields.errors('*')}" th:text="${e}"></p>
+                </div>
+                <label for="title">업무명</label
+                ><input
+                  id="title"
+                  th:field="*{title}"
+                  maxlength="150"
+                  required
+                /><label for="assignee">담당자</label
+                ><input
+                  id="assignee"
+                  th:field="*{assignee}"
+                  maxlength="60"
+                  required
+                /><label for="itemDue">마감일</label
+                ><input
+                  id="itemDue"
+                  type="date"
+                  th:field="*{dueDate}"
+                  required
+                /><label for="itemDesc">내용</label
+                ><textarea
+                  id="itemDesc"
+                  th:field="*{description}"
+                  maxlength="2000"
+                  rows="3"
+                ></textarea
+                ><button class="primary">업무 등록</button>
+              </form>
+            </details>
+          </section>
+          <aside>
+            <h2>변경 이력</h2>
+            <ol class="history">
+              <li th:each="a:${history}">
+                <p th:text="${a.action}"></p>
+                <small
+                  th:text="|${a.actor} · ${#temporals.format(a.createdAt,'MM-dd HH:mm:ss')}|"
+                ></small>
+              </li>
+            </ol>
+          </aside>
+        </div>
+        <details th:if="${canEdit}" class="delete-area">
+          <summary>사업 삭제</summary>
+          <p>연결 업무가 없는 사업만 삭제할 수 있습니다.</p>
+          <form
+            th:action="@{/workspace/projects/{id}/delete(id=${project.id})}"
+            method="post"
+          >
+            <button
+              class="danger"
+              onclick="return confirm('이 사업을 삭제할까요?');"
+            >
+              사업 삭제
+            </button>
+          </form>
+        </details>
+      </main>
+      <footer th:replace="~{workspace/common :: footer}"></footer>
+    </div>
+  </body>
+</html>

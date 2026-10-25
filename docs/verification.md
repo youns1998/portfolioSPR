@@ -2,6 +2,8 @@
 
 검증일: 2026-10-26 / Windows x64
 
+패키지·화면 폴더 정리 후 Java 32개와 브라우저 13개 검사를 다시 통과했습니다. 테스트 위치는 `src/test/java/com/youns/portfoliospr/workspace/`와 `community/`입니다.
+
 | 항목 | 결과 |
 |---|---|
 | Java | Temurin 21.0.12.1 |

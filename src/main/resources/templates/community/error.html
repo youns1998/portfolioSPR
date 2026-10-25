@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>오류 · 무명광장</title>
+    <link rel="stylesheet" th:href="@{/community-assets/app.css}" />
+  </head>
+  <body>
+    <div class="shell">
+      <header th:replace="~{community/fragments/common :: header}"></header>
+      <main class="error-page">
+        <p class="error-code" th:text="${status}">500</p>
+        <p class="eyebrow" th:text="${title}">ERROR</p>
+        <h1 th:text="${message}">요청을 처리할 수 없습니다.</h1>
+        <p th:if="${path}" th:text="${path}">/path</p>
+        <div class="error-actions">
+          <button class="button" type="button" onclick="history.back()">
+            이전 화면
+          </button>
+          <a class="text-link" th:href="@{/}">홈으로 이동</a>
+        </div>
+      </main>
+      <footer th:replace="~{community/fragments/common :: footer}"></footer>
+    </div>
+  </body>
+</html>

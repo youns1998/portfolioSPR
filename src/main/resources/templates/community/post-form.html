@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="${editing} ? '글 수정 · 무명광장' : '새 글 · 무명광장'">
+      새 글
+    </title>
+    <link rel="stylesheet" th:href="@{/community-assets/app.css}" />
+  </head>
+  <body>
+    <div class="shell">
+      <header th:replace="~{community/fragments/common :: header}"></header>
+      <main class="narrow-page">
+        <a
+          class="back-link"
+          th:href="${editing} ? @{/boards/{boardId}/posts/{postId}(boardId=${board.id},postId=${post.id})} : @{/boards/{id}(id=${board.id})}"
+          >← 돌아가기</a
+        >
+        <div class="form-heading">
+          <p class="eyebrow" th:text="${board.name}">게시판</p>
+          <h1 th:text="${editing} ? '글 수정' : '글쓰기'">글쓰기</h1>
+        </div>
+
+        <form
+          class="panel-form"
+          method="post"
+          th:object="${postForm}"
+          th:action="${editing} ? @{/boards/{boardId}/posts/{postId}/edit(boardId=${board.id},postId=${post.id})} : @{/boards/{boardId}/posts(boardId=${board.id})}"
+        >
+          <label>
+            <span>제목</span>
+            <input type="text" th:field="*{title}" maxlength="120" autofocus />
+            <small class="field-error" th:errors="*{title}"></small>
+          </label>
+          <label>
+            <span>작성자</span>
+            <input
+              type="text"
+              th:field="*{author}"
+              maxlength="30"
+              placeholder="표시할 이름"
+            />
+            <small class="field-error" th:errors="*{author}"></small>
+          </label>
+          <label>
+            <span>내용</span>
+            <textarea
+              class="content-input"
+              th:field="*{content}"
+              maxlength="10000"
+              rows="14"
+            ></textarea>
+            <small class="field-error" th:errors="*{content}"></small>
+          </label>
+          <label>
+            <span
+              th:text="${editing} ? '작성 시 설정한 비밀번호' : '수정·삭제 비밀번호'"
+              >수정·삭제 비밀번호</span
+            >
+            <input
+              type="password"
+              th:field="*{password}"
+              minlength="4"
+              maxlength="64"
+              placeholder="4~64자"
+              th:autocomplete="${editing} ? 'current-password' : 'new-password'"
+              required
+            />
+            <small>글 수정·삭제 시 필요합니다.</small>
+            <small class="field-error" th:errors="*{password}"></small>
+          </label>
+          <div class="form-actions">
+            <a
+              class="button button-secondary"
+              th:href="${editing} ? @{/boards/{boardId}/posts/{postId}(boardId=${board.id},postId=${post.id})} : @{/boards/{id}(id=${board.id})}"
+              >취소</a
+            >
+            <button
+              class="button"
+              type="submit"
+              th:text="${editing} ? '수정' : '등록'"
+            >
+              등록
+            </button>
+          </div>
+        </form>
+      </main>
+      <footer th:replace="~{community/fragments/common :: footer}"></footer>
+    </div>
+  </body>
+</html>

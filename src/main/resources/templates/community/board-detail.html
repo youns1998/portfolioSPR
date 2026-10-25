@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:text="|${board.name} · 무명광장|">게시판 · 무명광장</title>
+    <link rel="stylesheet" th:href="@{/community-assets/app.css}" />
+  </head>
+  <body>
+    <div class="shell">
+      <header th:replace="~{community/fragments/common :: header}"></header>
+      <main>
+        <div
+          class="flash"
+          th:if="${notice}"
+          th:text="${notice}"
+          role="status"
+        ></div>
+        <div class="page-heading">
+          <div>
+            <h1 th:text="${board.name}">게시판</h1>
+            <p th:text="${board.description}">게시판 설명</p>
+          </div>
+          <a class="button" th:href="@{/boards/{id}/posts/new(id=${board.id})}"
+            >글쓰기</a
+          >
+        </div>
+
+        <section class="post-list-section" aria-label="게시글 목록">
+          <div class="list-tools">
+            <p class="list-count">
+              전체 <strong th:text="${posts.totalElements}">0</strong>개
+              <span>· 최신순</span>
+            </p>
+            <form
+              class="search-form"
+              method="get"
+              th:action="@{/boards/{id}(id=${board.id})}"
+            >
+              <label class="sr-only" for="keyword">제목 또는 작성자 검색</label>
+              <input
+                id="keyword"
+                type="search"
+                name="keyword"
+                th:value="${keyword}"
+                placeholder="제목 또는 작성자"
+              />
+              <button type="submit">검색</button>
+            </form>
+          </div>
+
+          <table class="post-table" th:if="${!posts.empty}">
+            <caption class="sr-only">
+              게시글 목록: 번호, 제목, 작성자, 작성일, 조회
+            </caption>
+            <thead>
+              <tr>
+                <th scope="col" class="col-number">번호</th>
+                <th scope="col" class="col-title">제목</th>
+                <th scope="col" class="col-author">작성자</th>
+                <th scope="col" class="col-date">작성일</th>
+                <th scope="col" class="col-views">조회</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr th:each="post, stat : ${posts.content}">
+                <td
+                  class="col-number"
+                  th:text="${posts.totalElements - posts.number * posts.size - stat.index}"
+                >
+                  45
+                </td>
+                <td class="col-title">
+                  <a
+                    class="post-title"
+                    th:href="@{/boards/{boardId}/posts/{postId}(boardId=${board.id},postId=${post.id})}"
+                    th:text="${post.title}"
+                    >게시글 제목</a
+                  >
+                  <div class="post-mobile-meta">
+                    <span th:text="${post.author}">작성자</span>
+                    <time
+                      th:datetime="${post.createdAt}"
+                      th:text="${#temporals.format(post.createdAt, 'MM.dd')}"
+                      >10.23</time
+                    >
+                    <span th:text="|조회 ${post.viewCount}|">조회 0</span>
+                  </div>
+                </td>
+                <td class="col-author" th:text="${post.author}">작성자</td>
+                <td class="col-date">
+                  <time
+                    th:datetime="${post.createdAt}"
+                    th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd')}"
+                    >2026.10.23</time
+                  >
+                </td>
+                <td class="col-views" th:text="${post.viewCount}">0</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="empty-state" th:if="${posts.empty}">
+            <h2
+              th:text="${keyword.isBlank()} ? '아직 게시글이 없습니다.' : '검색 결과가 없습니다.'"
+            >
+              게시글이 없습니다.
+            </h2>
+            <p
+              th:text="${keyword.isBlank()} ? '첫 글을 남겨보세요.' : '다른 검색어를 입력해 보세요.'"
+            >
+              첫 글을 남겨보세요.
+            </p>
+          </div>
+
+          <nav
+            class="pagination"
+            aria-label="페이지 이동"
+            th:if="${posts.totalPages > 1}"
+          >
+            <a
+              class="nav-step"
+              th:if="${posts.hasPrevious()}"
+              th:href="@{/boards/{id}(id=${board.id},page=${posts.number - 1},keyword=${keyword})}"
+              >이전</a
+            >
+            <a
+              th:each="number : ${#numbers.sequence(0, posts.totalPages - 1)}"
+              th:href="@{/boards/{id}(id=${board.id},page=${number},keyword=${keyword})}"
+              th:text="${number + 1}"
+              th:classappend="${number == posts.number} ? 'active'"
+              th:attr="aria-current=${number == posts.number} ? 'page' : null"
+              >1</a
+            >
+            <a
+              class="nav-step"
+              th:if="${posts.hasNext()}"
+              th:href="@{/boards/{id}(id=${board.id},page=${posts.number + 1},keyword=${keyword})}"
+              >다음</a
+            >
+          </nav>
+        </section>
+
+        <details class="board-manage">
+          <summary>게시판 관리</summary>
+          <div class="manage-panel">
+            <a class="text-link" th:href="@{/boards/{id}/edit(id=${board.id})}"
+              >게시판 수정</a
+            >
+            <details class="danger-zone">
+              <summary>게시판 삭제</summary>
+              <form
+                method="post"
+                th:action="@{/boards/{id}/delete(id=${board.id})}"
+              >
+                <p>게시글과 댓글도 모두 삭제됩니다.</p>
+                <input
+                  type="password"
+                  name="password"
+                  minlength="4"
+                  maxlength="64"
+                  placeholder="관리 비밀번호"
+                  required
+                />
+                <button class="button button-danger" type="submit">삭제</button>
+              </form>
+            </details>
+          </div>
+        </details>
+      </main>
+      <footer th:replace="~{community/fragments/common :: footer}"></footer>
+    </div>
+  </body>
+</html>

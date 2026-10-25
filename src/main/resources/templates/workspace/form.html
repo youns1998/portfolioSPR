@@ -1,1 +1,85 @@
-<!doctype html><html lang="ko" xmlns:th="http://www.thymeleaf.org"><head><link rel="icon" href="data:,"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>사업 입력 · 사업기록</title><link rel="stylesheet" th:href="@{/workspace-assets/work.css}"></head><body><div class="shell"><header th:replace="~{workspace/common :: header}"></header><main class="narrow"><a class="text-link" th:href="@{/workspace}">← 사업 목록</a><h1 th:text="${editing?'사업 수정':'사업 등록'}"></h1><form class="editor" th:object="${projectForm}" th:action="${editing}?@{/workspace/projects/{id}/edit(id=${project.id})}:@{/workspace/projects}" method="post"><div th:if="${#fields.hasErrors('*')}" class="error"><p th:each="e:${#fields.errors('*')}" th:text="${e}"></p></div><input type="hidden" th:field="*{version}"><div class="form-grid"><div><label for="code">사업 코드</label><input id="code" th:field="*{code}" maxlength="30" placeholder="DEMO-2026-05" required><small>영문·숫자·하이픈 3~30자</small></div><div><label for="owner">담당</label><input id="owner" th:field="*{owner}" maxlength="60" required></div></div><label for="name">사업명</label><input id="name" th:field="*{name}" maxlength="120" required><div class="form-grid"><div><label for="startDate">시작일</label><input id="startDate" type="date" th:field="*{startDate}" required></div><div><label for="dueDate">마감일</label><input id="dueDate" type="date" th:field="*{dueDate}" required></div></div><label for="status">진행 상태</label><select id="status" th:field="*{status}"><option th:each="s:${workStatuses}" th:value="${s}" th:text="${s.label}"></option></select><label for="description">사업 설명</label><textarea id="description" th:field="*{description}" rows="5" maxlength="2000"></textarea><div class="actions"><button class="primary" th:text="${editing?'변경 저장':'사업 등록'}"></button><a th:href="@{/workspace}">취소</a></div></form></main><footer th:replace="~{workspace/common :: footer}"></footer></div></body></html>
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <link rel="icon" href="data:," />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>사업 입력 · 사업기록</title>
+    <link rel="stylesheet" th:href="@{/workspace-assets/work.css}" />
+  </head>
+  <body>
+    <div class="shell">
+      <header th:replace="~{workspace/common :: header}"></header>
+      <main class="narrow">
+        <a class="text-link" th:href="@{/workspace}">← 사업 목록</a>
+        <h1 th:text="${editing?'사업 수정':'사업 등록'}"></h1>
+        <form
+          class="editor"
+          th:object="${projectForm}"
+          th:action="${editing}?@{/workspace/projects/{id}/edit(id=${project.id})}:@{/workspace/projects}"
+          method="post"
+        >
+          <div th:if="${#fields.hasErrors('*')}" class="error">
+            <p th:each="e:${#fields.errors('*')}" th:text="${e}"></p>
+          </div>
+          <input type="hidden" th:field="*{version}" />
+          <div class="form-grid">
+            <div>
+              <label for="code">사업 코드</label
+              ><input
+                id="code"
+                th:field="*{code}"
+                maxlength="30"
+                placeholder="DEMO-2026-05"
+                required
+              /><small>영문·숫자·하이픈 3~30자</small>
+            </div>
+            <div>
+              <label for="owner">담당</label
+              ><input id="owner" th:field="*{owner}" maxlength="60" required />
+            </div>
+          </div>
+          <label for="name">사업명</label
+          ><input id="name" th:field="*{name}" maxlength="120" required />
+          <div class="form-grid">
+            <div>
+              <label for="startDate">시작일</label
+              ><input
+                id="startDate"
+                type="date"
+                th:field="*{startDate}"
+                required
+              />
+            </div>
+            <div>
+              <label for="dueDate">마감일</label
+              ><input id="dueDate" type="date" th:field="*{dueDate}" required />
+            </div>
+          </div>
+          <label for="status">진행 상태</label
+          ><select id="status" th:field="*{status}">
+            <option
+              th:each="s:${workStatuses}"
+              th:value="${s}"
+              th:text="${s.label}"
+            ></option></select
+          ><label for="description">사업 설명</label
+          ><textarea
+            id="description"
+            th:field="*{description}"
+            rows="5"
+            maxlength="2000"
+          ></textarea>
+          <div class="actions">
+            <button
+              class="primary"
+              th:text="${editing?'변경 저장':'사업 등록'}"
+            ></button
+            ><a th:href="@{/workspace}">취소</a>
+          </div>
+        </form>
+      </main>
+      <footer th:replace="~{workspace/common :: footer}"></footer>
+    </div>
+  </body>
+</html>
