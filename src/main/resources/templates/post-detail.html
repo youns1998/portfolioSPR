@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="|${post.title} · 무명광장|">게시글 · 무명광장</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="shell">
+  <header th:replace="~{fragments/common :: header}"></header>
+  <main class="article-page">
+    <div class="flash" th:if="${notice}" th:text="${notice}" role="status"></div>
+    <a class="back-link" th:href="@{/boards/{id}(id=${board.id})}" th:text="|← ${board.name}|">← 게시판</a>
+
+    <article class="post-article">
+      <header class="article-header">
+        <h1 th:text="${post.title}">게시글 제목</h1>
+        <div class="article-meta">
+          <span th:text="${post.author}">작성자</span>
+          <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'yyyy.MM.dd HH:mm')}">작성일</time>
+          <span th:text="|조회 ${post.viewCount}|">조회 0</span>
+          <span th:if="${!post.updatedAt.equals(post.createdAt)}">수정됨</span>
+        </div>
+      </header>
+      <div class="article-content" th:text="${post.content}">본문</div>
+      <div class="article-actions">
+        <a class="button button-secondary button-small" th:href="@{/boards/{id}(id=${board.id})}">목록</a>
+        <a class="text-link" th:href="@{/boards/{boardId}/posts/{postId}/edit(boardId=${board.id},postId=${post.id})}">게시글 수정</a>
+        <details class="danger-zone inline-danger">
+          <summary>게시글 삭제</summary>
+          <form method="post" th:action="@{/boards/{boardId}/posts/{postId}/delete(boardId=${board.id},postId=${post.id})}">
+            <input type="password" name="password" minlength="4" maxlength="64" placeholder="작성 비밀번호" required>
+            <button class="button button-danger" type="submit">삭제</button>
+          </form>
+        </details>
+      </div>
+    </article>
+
+    <section id="comments" class="comment-section" aria-labelledby="comment-title">
+      <div class="section-head">
+        <div>
+          <h2 id="comment-title">댓글 <span th:text="${comments.size()}">0</span></h2>
+        </div>
+        <p class="ip-note">댓글 수정·삭제 시 작성 비밀번호가 필요합니다.</p>
+      </div>
+
+      <form class="comment-compose" method="post" th:object="${commentForm}"
+            th:action="@{/boards/{boardId}/posts/{postId}/comments(boardId=${board.id},postId=${post.id})}">
+        <label class="sr-only" for="comment-content">댓글 내용</label>
+        <textarea id="comment-content" th:field="*{content}" maxlength="1000" rows="3" placeholder="댓글을 입력하세요." required></textarea>
+        <small class="field-error" th:errors="*{content}"></small>
+        <div class="comment-submit">
+          <label class="comment-password">
+            <span>수정·삭제 비밀번호</span>
+            <input type="password" th:field="*{password}" id="comment-password" minlength="4" maxlength="64"
+                   placeholder="4~64자" autocomplete="new-password" required>
+            <small class="field-error" th:errors="*{password}"></small>
+          </label>
+          <button class="button button-small" type="submit">댓글 등록</button>
+        </div>
+      </form>
+
+      <div class="comment-list" th:if="${!comments.isEmpty()}">
+        <article class="comment" th:each="comment : ${comments}" th:id="|comment-${comment.id}|">
+          <header>
+            <strong th:text="${comment.authorAlias}">익명-0000</strong>
+            <span th:text="${comment.maskedIp}">127.0.0.*</span>
+            <time th:datetime="${comment.createdAt}" th:text="${#temporals.format(comment.createdAt, 'yyyy.MM.dd HH:mm')}">작성일</time>
+          </header>
+          <p th:text="${comment.content}">댓글 내용</p>
+          <div class="comment-actions">
+            <details>
+              <summary>수정</summary>
+              <form method="post" th:action="@{/boards/{boardId}/posts/{postId}/comments/{commentId}/edit(boardId=${board.id},postId=${post.id},commentId=${comment.id})}">
+                <textarea name="content" maxlength="1000" rows="3" th:text="${comment.content}" required></textarea>
+                <label class="sr-only" th:for="|edit-password-${comment.id}|">댓글 수정 비밀번호</label>
+                <input type="password" name="password" th:id="|edit-password-${comment.id}|" minlength="4" maxlength="64"
+                       placeholder="작성 비밀번호" autocomplete="current-password" required>
+                <button class="button button-small" type="submit">수정 저장</button>
+              </form>
+            </details>
+            <details>
+              <summary>삭제</summary>
+              <form class="comment-delete-form" method="post" th:action="@{/boards/{boardId}/posts/{postId}/comments/{commentId}/delete(boardId=${board.id},postId=${post.id},commentId=${comment.id})}">
+                <label class="sr-only" th:for="|delete-password-${comment.id}|">댓글 삭제 비밀번호</label>
+                <input type="password" name="password" th:id="|delete-password-${comment.id}|" minlength="4" maxlength="64"
+                       placeholder="작성 비밀번호" autocomplete="current-password" required>
+                <button class="button button-small button-danger" type="submit">삭제</button>
+              </form>
+            </details>
+          </div>
+        </article>
+      </div>
+      <div class="empty-comments" th:if="${comments.isEmpty()}">첫 댓글을 남겨보세요.</div>
+    </section>
+  </main>
+  <footer th:replace="~{fragments/common :: footer}"></footer>
+</div>
+</body>
+</html>

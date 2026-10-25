@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="게임, 음악, 운동 이야기를 나누는 익명 커뮤니티">
+  <title>무명광장 · 커뮤니티</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="shell">
+  <header th:replace="~{fragments/common :: header}"></header>
+  <main>
+    <div class="flash" th:if="${notice}" th:text="${notice}" role="status"></div>
+    <div class="page-heading">
+      <div>
+        <h1>커뮤니티</h1>
+        <p>관심 있는 주제로 편하게 이야기 나눠요.</p>
+      </div>
+      <!--/* 게시판 생성 기능 임시 비활성화
+      <a class="button" th:href="@{/boards/new}">게시판 만들기</a>
+      */-->
+    </div>
+
+    <div class="board-grid" th:if="${!boards.isEmpty()}">
+      <section class="board-preview" th:each="item : ${boards}" th:aria-label="${item.board.name}">
+        <div class="preview-heading">
+          <h2><a th:href="@{/boards/{id}(id=${item.board.id})}" th:text="${item.board.name}">게시판</a>
+            <span class="count-badge" th:text="${item.postCount}">45</span>
+          </h2>
+          <a class="more-link" th:href="@{/boards/{id}(id=${item.board.id})}"
+             th:aria-label="|${item.board.name} 더보기|">더보기 <span aria-hidden="true">›</span></a>
+        </div>
+        <ul class="preview-list" th:if="${!item.posts.isEmpty()}">
+          <li th:each="post : ${item.posts}">
+            <a th:href="@{/boards/{boardId}/posts/{postId}(boardId=${item.board.id},postId=${post.id})}"
+               th:text="${post.title}">게시글 제목</a>
+            <time th:datetime="${post.createdAt}" th:text="${#temporals.format(post.createdAt, 'MM.dd')}">10.23</time>
+          </li>
+        </ul>
+        <p class="preview-empty" th:if="${item.posts.isEmpty()}">등록된 게시글이 없습니다.</p>
+      </section>
+    </div>
+    <div class="empty-state" th:if="${boards.isEmpty()}">
+      <h2>등록된 게시판이 없습니다.</h2>
+      <p>게시판을 준비 중입니다.</p>
+    </div>
+  </main>
+  <footer th:replace="~{fragments/common :: footer}"></footer>
+</div>
+</body>
+</html>

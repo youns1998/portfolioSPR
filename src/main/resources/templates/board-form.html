@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${editing} ? '게시판 수정 · 무명광장' : '게시판 만들기 · 무명광장'">게시판 만들기</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div class="shell">
+  <header th:replace="~{fragments/common :: header}"></header>
+  <main class="narrow-page">
+    <a class="back-link" th:href="${editing} ? @{/boards/{id}(id=${board.id})} : @{/}">← 돌아가기</a>
+    <div class="form-heading">
+      <h1 th:text="${editing} ? '게시판 수정' : '게시판 만들기'">게시판 수정</h1>
+      <p>주제와 분위기를 설명하고, 관리에 사용할 비밀번호를 정하세요.</p>
+    </div>
+
+    <form class="panel-form" method="post" th:object="${boardForm}"
+          th:action="${editing} ? @{/boards/{id}/edit(id=${board.id})} : @{/boards}">
+      <label>
+        <span>게시판 이름</span>
+        <input type="text" th:field="*{name}" maxlength="40" placeholder="예: 건축과 공간" autofocus>
+        <small class="field-error" th:errors="*{name}"></small>
+      </label>
+      <label>
+        <span>설명</span>
+        <textarea th:field="*{description}" maxlength="200" rows="4" placeholder="어떤 이야기를 나누는 곳인지 알려주세요."></textarea>
+        <small class="field-error" th:errors="*{description}"></small>
+      </label>
+      <label>
+        <span th:text="${editing} ? '현재 관리 비밀번호' : '관리 비밀번호'">관리 비밀번호</span>
+        <input type="password" th:field="*{password}" minlength="4" maxlength="64" autocomplete="current-password">
+        <small>게시판 수정·삭제에 필요하며 복구할 수 없습니다.</small>
+        <small class="field-error" th:errors="*{password}"></small>
+      </label>
+      <button class="button" type="submit" th:text="${editing} ? '수정 저장' : '게시판 만들기'">게시판 만들기</button>
+    </form>
+  </main>
+  <footer th:replace="~{fragments/common :: footer}"></footer>
+</div>
+</body>
+</html>
